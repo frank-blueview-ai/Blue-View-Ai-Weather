@@ -17,6 +17,9 @@ jobs:
   build-linux:
     name: Linux (.deb)
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: desktop
     steps:
       - uses: actions/checkout@v4
 
@@ -32,12 +35,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-deb
-          path: "*.deb"
+          path: "desktop/*.deb"
 
 # ── macOS .dmg ──────────────────────────────────────────────────────────────
   build-macos:
     name: macOS (.dmg)
     runs-on: macos-13          # Intel — broadest PyQt6-WebEngine support
+    defaults:
+      run:
+        working-directory: desktop
     steps:
       - uses: actions/checkout@v4
 
@@ -83,12 +89,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-dmg
-          path: "*.dmg"
+          path: "desktop/*.dmg"
 
 # ── Windows .msi ────────────────────────────────────────────────────────────
   build-windows:
     name: Windows (.msi)
     runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop
     steps:
       - uses: actions/checkout@v4
 
@@ -116,7 +125,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-msi
-          path: "dist/*.msi"
+          path: "desktop/dist/*.msi"
 
 # ── GitHub Release ───────────────────────────────────────────────────────────
   release:

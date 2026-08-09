@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash screen theme — shown by the OS before setContentView -->
+    <style name="Theme.BlueViewWeather.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0B0E1C</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.BlueViewWeather</item>
+    </style>
+
+    <style name="Theme.BlueViewWeather" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#52BEE8</item>
+        <item name="colorOnPrimary">#0B0E1C</item>
+        <item name="colorSurface">#0B0E1C</item>
+        <item name="colorOnSurface">#DAE2F8</item>
+        <item name="android:windowBackground">#0B0E1C</item>
+        <item name="android:statusBarColor">#0B0E1C</item>
+        <item name="android:navigationBarColor">#0B0E1C</item>
+    </style>
+</resources>
