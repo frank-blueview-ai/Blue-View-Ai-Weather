@@ -158,11 +158,13 @@ fun HomeScreen(
                             expanded = state.expandRadar,
                             onToggle = viewModel::toggleRadar
                         ) {
-                            if (state.lat != 0.0 && state.lon != 0.0) {
+                            val tileUrl = state.radarTileUrl
+                            if (state.lat != 0.0 && state.lon != 0.0 && tileUrl != null) {
                                 RadarWebView(
                                     lat      = state.lat,
                                     lon      = state.lon,
                                     city     = state.cityLabel,
+                                    tileUrl  = tileUrl,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(280.dp)
