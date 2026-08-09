@@ -18,7 +18,7 @@ No API key required — powered by [Open-Meteo](https://open-meteo.com) and [Rai
 
 **Option A — Download the .deb installer** *(recommended)*
 
-1. Go to the [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases/latest) page
+1. Go to the [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases) page
 2. Download `blue-view-ai-weather_1.0.0_all.deb`
 3. Open a terminal and run:
 
@@ -53,7 +53,7 @@ sudo dpkg -i blue-view-ai-weather_1.0.0_all.deb
 
 **Option A — Download the .dmg installer** *(recommended)*
 
-1. Go to the [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases/latest) page
+1. Go to the [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases) page
 2. Download `Blue-View-AI-Weather-1.0.0.dmg`
 3. Open the `.dmg` file
 4. Drag **Blue View Weather** into your **Applications** folder
@@ -88,7 +88,7 @@ bash build_mac.sh
 
 **Option A — Download the .msi installer** *(recommended)*
 
-1. Go to the [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases/latest) page
+1. Go to the [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases) page
 2. Download `Blue-View-AI-Weather-1.0.0-amd64.msi`
 3. Double-click the `.msi` and follow the installer
 4. Launch **Blue View Weather** from the Start menu
@@ -163,11 +163,11 @@ build_win.bat
 | 🍎 macOS | `bash build_mac.sh` | `Blue-View-AI-Weather-1.0.0.dmg` |
 | 🪟 Windows | `build_win.bat` | `dist\Blue-View-AI-Weather-1.0.0-amd64.msi` |
 
-GitHub Actions builds all three automatically on every release tag:
+GitHub Actions builds all three automatically on every desktop release tag:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag desktop-v1.0.0
+git push origin desktop-v1.0.0
 ```
 
 The Actions workflow creates a GitHub Release and attaches all three installers as downloadable assets.

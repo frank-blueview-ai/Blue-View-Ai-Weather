@@ -1,6 +1,6 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Blue View AI Weather — Build & Release packages
-# Triggered on:  git tag v1.0.0  →  push tag to GitHub
+# Triggered on:  git tag desktop-v1.0.0  →  push tag to GitHub
 # Produces:      .deb (Linux)  ·  .dmg (macOS)  ·  .msi (Windows)
 # ─────────────────────────────────────────────────────────────────────────────
 name: Build packages
