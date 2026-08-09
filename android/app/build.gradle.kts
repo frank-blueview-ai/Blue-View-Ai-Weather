@@ -14,8 +14,8 @@ android {
         applicationId  = "ai.blueview.weather"
         minSdk         = 26          // Android 8.0 — covers 95%+ of active devices
         targetSdk      = 34
-        versionCode    = 6
-        versionName    = "1.0.5"
+        versionCode    = 9
+        versionName    = "1.0.9"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
