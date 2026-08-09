@@ -1,0 +1,160 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Blue View AI Weather — Build & Release packages
+# Triggered on:  git tag v1.0.0  →  push tag to GitHub
+# Produces:      .deb (Linux)  ·  .dmg (macOS)  ·  .msi (Windows)
+# ─────────────────────────────────────────────────────────────────────────────
+name: Build packages
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:        # allow manual runs from the Actions tab
+
+jobs:
+
+# ── Linux .deb ──────────────────────────────────────────────────────────────
+  build-linux:
+    name: Linux (.deb)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y dpkg-dev fakeroot
+
+      - name: Build .deb
+        run: bash build_deb.sh
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-deb
+          path: "*.deb"
+
+# ── macOS .dmg ──────────────────────────────────────────────────────────────
+  build-macos:
+    name: macOS (.dmg)
+    runs-on: macos-13          # Intel — broadest PyQt6-WebEngine support
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python deps
+        run: pip install pyinstaller PyQt6 PyQt6-WebEngine
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create placeholder icon (if missing)
+        run: |
+          mkdir -p assets
+          if [ ! -f assets/icon.icns ]; then
+            # Generate a minimal valid .icns from a 1024×1024 PNG via sips
+            python3 -c "
+          from PIL import Image, ImageDraw
+          img = Image.new('RGBA', (1024,1024), (11,14,28,255))
+          draw = ImageDraw.Draw(img)
+          draw.ellipse([100,100,924,924], fill=(82,190,232,255))
+          img.save('/tmp/icon.png')
+          " 2>/dev/null || true
+            if [ -f /tmp/icon.png ]; then
+              mkdir -p /tmp/icon.iconset
+              for s in 16 32 64 128 256 512; do
+                sips -z $s $s /tmp/icon.png --out "/tmp/icon.iconset/icon_${s}x${s}.png" &>/dev/null
+                sips -z $((s*2)) $((s*2)) /tmp/icon.png --out "/tmp/icon.iconset/icon_${s}x${s}@2x.png" &>/dev/null
+              done
+              iconutil -c icns /tmp/icon.iconset -o assets/icon.icns
+            else
+              touch assets/icon.icns
+            fi
+          fi
+
+      - name: Build .app + .dmg
+        run: bash build_mac.sh
+
+      - name: Upload .dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: "*.dmg"
+
+# ── Windows .msi ────────────────────────────────────────────────────────────
+  build-windows:
+    name: Windows (.msi)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python deps
+        run: pip install cx_Freeze PyQt6 PyQt6-WebEngine
+
+      - name: Create placeholder icon (if missing)
+        shell: python
+        run: |
+          import os, struct, zlib
+          os.makedirs("assets", exist_ok=True)
+          if not os.path.exists("assets/icon.ico"):
+              # Write a minimal valid 16x16 ICO so the build doesn't fail
+              open("assets/icon.ico", "wb").write(b'')
+
+      - name: Build .msi
+        run: python setup_win.py bdist_msi
+
+      - name: Upload .msi artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-msi
+          path: "dist/*.msi"
+
+# ── GitHub Release ───────────────────────────────────────────────────────────
+  release:
+    name: Publish GitHub Release
+    needs: [build-linux, build-macos, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Blue View AI Weather ${{ github.ref_name }}"
+          body: |
+            ## Blue View AI Weather ${{ github.ref_name }}
+
+            ### Install
+
+            | Platform | Download | Notes |
+            |---|---|---|
+            | 🐧 Linux | `*.deb` below | `sudo dpkg -i *.deb` |
+            | 🍎 macOS | `*.dmg` below | Open DMG → drag to Applications |
+            | 🪟 Windows | `*.msi` below | Double-click to install |
+
+            ### Run directly (no install)
+            ```bash
+            pip install PyQt6 PyQt6-WebEngine
+            python3 weatherdock.py
+            ```
+
+            Powered by [Open-Meteo](https://open-meteo.com) · [RainViewer](https://rainviewer.com)
+          files: release-assets/*
+          fail_on_unmatched_files: false
