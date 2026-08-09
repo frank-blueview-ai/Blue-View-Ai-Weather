@@ -63,18 +63,18 @@ jobs:
           <plist version="1.0">
           <dict>
               <key>method</key>
-              <string>app-store</string>
+              <string>app-store-connect</string>
               <key>teamID</key>
               <string>${TEAM_ID}</string>
               <key>signingStyle</key>
               <string>automatic</string>
               <key>destination</key>
-              <string>upload</string>
+              <string>export</string>
           </dict>
           </plist>
           PLIST
 
-      - name: Export & upload to TestFlight
+      - name: Export .ipa
         working-directory: ios
         env:
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
@@ -87,3 +87,18 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyID "$API_KEY_ID" \
             -authenticationKeyIssuerID "$API_ISSUER_ID"
+
+      # altool talks to App Store Connect over REST with the API key directly,
+      # bypassing Xcode's account database (which isn't populated on CI runners
+      # and makes xcodebuild's own upload destination fail with "Failed to Use
+      # Accounts").
+      - name: Upload to TestFlight
+        env:
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$RUNNER_TEMP/export/BlueViewWeather.ipa" \
+            --apiKey "$API_KEY_ID" \
+            --apiIssuer "$API_ISSUER_ID"
