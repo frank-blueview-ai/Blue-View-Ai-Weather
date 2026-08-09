@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# BlueView Weather — .gitignore
+# Copyright (c) 2026 BlueView / Frank Perez. All rights reserved.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Qt / app settings (user-specific, not for source control)
+*.ini
+*.conf
+
+# Logs
+*.log
