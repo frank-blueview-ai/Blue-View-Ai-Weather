@@ -10,8 +10,13 @@ import okhttp3.Request
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// The monorepo releases all three platforms, each on its own tag prefix, so
+// /releases/latest is not usable here — it could return an ios- or desktop- tag.
+// Fetch the list (newest first) and pick the newest android- release.
 private const val RELEASES_API =
-    "https://api.github.com/repos/frank-blueview-ai/Blue-View-Ai-Weather-Android/releases/latest"
+    "https://api.github.com/repos/frank-blueview-ai/Blue-View-Ai-Weather/releases?per_page=30"
+
+private const val TAG_PREFIX = "android-v"
 
 @Serializable
 data class GithubRelease(
@@ -47,13 +52,15 @@ class UpdateChecker @Inject constructor(
                 .build()
             val body = okHttpClient.newCall(request).execute().use { it.body?.string() }
                 ?: return@withContext UpdateState.Error("Empty response from server")
-            val release = json.decodeFromString<GithubRelease>(body)
-            val latest  = release.tagName.trimStart('v')
+            val release = json.decodeFromString<List<GithubRelease>>(body)
+                .firstOrNull { it.tagName.startsWith(TAG_PREFIX) }
+                ?: return@withContext UpdateState.Error("No Android release found")
+            val latest  = release.tagName.removePrefix(TAG_PREFIX)
             val current = currentVersion.trimStart('v')
             if (isNewer(latest, current)) {
                 val apk = release.assets.firstOrNull { it.name.endsWith(".apk") }
                     ?: return@withContext UpdateState.Error("No APK found in release")
-                UpdateState.Available(release.tagName, apk.downloadUrl)
+                UpdateState.Available(latest, apk.downloadUrl)
             } else {
                 UpdateState.UpToDate
             }
