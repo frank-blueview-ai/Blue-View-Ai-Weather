@@ -30,14 +30,20 @@ All three apps share the same core feature set and visual theme:
 
 ## CI / Releases
 
-Each platform builds independently via its own GitHub Actions workflow, triggered by
-pushing a `v*` tag or manually from the Actions tab:
+Each platform releases independently, on its own tag prefix, so tagging one app doesn't
+kick off builds for the other two. All three can also be run manually from the Actions tab.
 
-| Workflow | Produces |
-|---|---|
-| [`desktop-build.yml`](.github/workflows/desktop-build.yml) | `.deb` / `.dmg` / `.msi` installers, attached to a GitHub Release |
-| [`android-build.yml`](.github/workflows/android-build.yml) | Debug APK + Release AAB |
-| [`ios-build.yml`](.github/workflows/ios-build.yml) | Archives and uploads to TestFlight |
+| Workflow | Tag prefix | Produces |
+|---|---|---|
+| [`desktop-build.yml`](.github/workflows/desktop-build.yml) | `desktop-v*` | `.deb` / `.dmg` / `.msi` installers, attached to a GitHub Release |
+| [`android-build.yml`](.github/workflows/android-build.yml) | `android-v*` | Debug APK + Release AAB |
+| [`ios-build.yml`](.github/workflows/ios-build.yml) | `ios-v*` | Archives and uploads to TestFlight |
+
+```bash
+git tag android-v1.0.9 && git push origin android-v1.0.9   # Android release only
+git tag ios-v1.0.0     && git push origin ios-v1.0.0       # iOS release only
+git tag desktop-v1.0.0 && git push origin desktop-v1.0.0   # Desktop release only
+```
 
 ## License
 

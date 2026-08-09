@@ -3,7 +3,7 @@ name: Build Android APK & AAB
 on:
   push:
     tags:
-      - 'v*'
+      - 'android-v*'
   workflow_dispatch:
 
 permissions:

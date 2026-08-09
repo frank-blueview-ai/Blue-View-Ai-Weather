@@ -43,7 +43,8 @@ open BlueViewWeather.xcodeproj
 Release archiving requires Xcode 26 (the current App Store minimum SDK requirement), so it
 runs in CI rather than locally — see
 [`.github/workflows/ios-build.yml`](../.github/workflows/ios-build.yml). Triggered by pushing
-a `v*` tag or manually from the Actions tab. Needs these repo secrets configured:
+an `ios-v*` tag (e.g. `ios-v1.0.0`) or manually from the Actions tab. Needs these repo
+secrets configured:
 
 | Secret | Description |
 |---|---|

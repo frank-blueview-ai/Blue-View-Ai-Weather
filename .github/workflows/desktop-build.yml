@@ -8,7 +8,7 @@ name: Build packages
 on:
   push:
     tags:
-      - "v*"
+      - "desktop-v*"
   workflow_dispatch:        # allow manual runs from the Actions tab
 
 jobs:

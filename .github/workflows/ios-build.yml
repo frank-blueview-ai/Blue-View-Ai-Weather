@@ -3,7 +3,7 @@ name: Build iOS App & Upload to TestFlight
 on:
   push:
     tags:
-      - 'v*'
+      - 'ios-v*'
   workflow_dispatch:
 
 permissions:
@@ -37,6 +37,7 @@ jobs:
         run: |
           mkdir -p ~/private_keys
           echo "$API_KEY_BASE64" | base64 --decode > ~/private_keys/AuthKey_${API_KEY_ID}.p8
+          echo "API_KEY_PATH=$HOME/private_keys/AuthKey_${API_KEY_ID}.p8" >> "$GITHUB_ENV"
 
       - name: Archive
         working-directory: ios
@@ -51,6 +52,7 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyID "$API_KEY_ID" \
             -authenticationKeyIssuerID "$API_ISSUER_ID" \
+            -authenticationKeyPath "$API_KEY_PATH" \
             archive -archivePath "$RUNNER_TEMP/BlueViewWeather.xcarchive"
 
       - name: Write export options
@@ -86,7 +88,8 @@ jobs:
             -exportPath "$RUNNER_TEMP/export" \
             -allowProvisioningUpdates \
             -authenticationKeyID "$API_KEY_ID" \
-            -authenticationKeyIssuerID "$API_ISSUER_ID"
+            -authenticationKeyIssuerID "$API_ISSUER_ID" \
+            -authenticationKeyPath "$API_KEY_PATH"
 
       # altool talks to App Store Connect over REST with the API key directly,
       # bypassing Xcode's account database (which isn't populated on CI runners
