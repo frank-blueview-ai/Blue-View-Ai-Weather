@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ai.blueview.weather.data.api.dto.ForecastResponse
 import ai.blueview.weather.data.preferences.UserPreferencesRepository
+import ai.blueview.weather.data.radar.RadarRepository
 import ai.blueview.weather.data.repository.WeatherRepository
 import ai.blueview.weather.data.repository.WeatherResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,13 +24,15 @@ data class HomeUiState(
     val expandForecast: Boolean      = true,
     val expandHourly: Boolean        = false,
     val expandRadar: Boolean         = true,
-    val needsCitySetup: Boolean      = false
+    val needsCitySetup: Boolean      = false,
+    val radarTileUrl: String?        = null
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: WeatherRepository,
-    private val prefs: UserPreferencesRepository
+    private val prefs: UserPreferencesRepository,
+    private val radar: RadarRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -58,12 +61,16 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun refresh(lat: Double, lon: Double, units: String) {
         _state.update { it.copy(isLoading = true, error = null) }
-        when (val r = repository.forecast(lat, lon, units)) {
+        // Fetch forecast and radar tile URL concurrently
+        val forecastResult = repository.forecast(lat, lon, units)
+        val tileUrl = radar.latestTileUrl()
+        when (forecastResult) {
             is WeatherResult.Success -> _state.update {
-                it.copy(isLoading = false, forecast = r.data, lat = lat, lon = lon,
-                    needsCitySetup = false)
+                it.copy(isLoading = false, forecast = forecastResult.data,
+                    lat = lat, lon = lon, needsCitySetup = false,
+                    radarTileUrl = tileUrl)
             }
-            is WeatherResult.Error   -> _state.update { it.copy(isLoading = false, error = r.message) }
+            is WeatherResult.Error   -> _state.update { it.copy(isLoading = false, error = forecastResult.message) }
         }
     }
 

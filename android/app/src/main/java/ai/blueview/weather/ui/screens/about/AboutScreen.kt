@@ -8,28 +8,36 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ai.blueview.weather.BuildConfig
+import ai.blueview.weather.data.update.UpdateState
 import ai.blueview.weather.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(onBack: () -> Unit) {
+fun AboutScreen(
+    onBack: () -> Unit,
+    viewModel: AboutViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+    val update by viewModel.update.collectAsStateWithLifecycle()
 
     fun openUrl(url: String) {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://$url")))
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title  = { Text("About", color = TextPrimary) },
+                title = { Text("About", color = TextPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, "Back", tint = TextSecondary)
@@ -53,7 +61,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 style     = MaterialTheme.typography.headlineLarge,
                 color     = TextPrimary,
                 textAlign = TextAlign.Center)
-            Text("Version 1.0.0",
+            Text("Version ${BuildConfig.VERSION_NAME}",
                 style = MaterialTheme.typography.bodyLarge,
                 color = TextSecondary)
             Text("Floating weather panel with live radar\n7-day forecast · Hourly drill-down",
@@ -61,18 +69,21 @@ fun AboutScreen(onBack: () -> Unit) {
                 color     = BlueAccent,
                 textAlign = TextAlign.Center)
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
+            UpdateSection(update, viewModel, ::openUrl)
+            Spacer(Modifier.height(4.dp))
+
             HorizontalDivider(color = TextMuted.copy(alpha = 0.3f))
             Spacer(Modifier.height(4.dp))
 
-            AboutRow("Author",   "Frank Perez")
-            AboutLinkRow("Email",    "frank@blueview.ai")   { openUrl("mailto:frank@blueview.ai") }
-            AboutLinkRow("OS",       "bvos.blueview.ai")    { openUrl("bvos.blueview.ai") }
-            AboutLinkRow("Paper",    "mypapertrail.co")     { openUrl("mypapertrail.co") }
-            AboutLinkRow("Read2Me",  "read2me.co")          { openUrl("read2me.co") }
-            AboutLinkRow("Web",      "blueview.ai")         { openUrl("blueview.ai") }
+            AboutRow("Author",  "Frank Perez")
+            AboutLinkRow("Email",   "frank@blueview.ai")  { openUrl("mailto:frank@blueview.ai") }
+            AboutLinkRow("OS",      "bvos.blueview.ai")   { openUrl("https://bvos.blueview.ai") }
+            AboutLinkRow("Paper",   "mypapertrail.co")    { openUrl("https://mypapertrail.co") }
+            AboutLinkRow("Read2Me", "read2me.co")         { openUrl("https://read2me.co") }
+            AboutLinkRow("Web",     "blueview.ai")        { openUrl("https://blueview.ai") }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
             HorizontalDivider(color = TextMuted.copy(alpha = 0.3f))
             Spacer(Modifier.height(4.dp))
 
@@ -84,6 +95,75 @@ fun AboutScreen(onBack: () -> Unit) {
                 style     = MaterialTheme.typography.bodyMedium,
                 color     = TextMuted,
                 textAlign = TextAlign.Center)
+        }
+    }
+}
+
+@Composable
+private fun UpdateSection(
+    update: UpdateState,
+    viewModel: AboutViewModel,
+    openUrl: (String) -> Unit
+) {
+    when (update) {
+        is UpdateState.Idle -> {
+            OutlinedButton(
+                onClick  = viewModel::checkForUpdate,
+                colors   = ButtonDefaults.outlinedButtonColors(contentColor = BlueAccent),
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Check for Updates") }
+        }
+        is UpdateState.Checking -> {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment     = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(
+                    color = BlueAccent, modifier = Modifier.size(18.dp), strokeWidth = 2.dp
+                )
+                Spacer(Modifier.width(10.dp))
+                Text("Checking…", color = TextSecondary)
+            }
+        }
+        is UpdateState.UpToDate -> {
+            Text("✓  You're on the latest version",
+                color = SuccessGreen,
+                style = MaterialTheme.typography.bodyMedium)
+            TextButton(onClick = viewModel::reset) {
+                Text("Check again", color = TextMuted)
+            }
+        }
+        is UpdateState.Available -> {
+            Card(
+                colors   = CardDefaults.cardColors(containerColor = NavyCard),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Update available: ${update.version}",
+                        color = BlueAccent,
+                        style = MaterialTheme.typography.titleSmall)
+                    Text("Tap below to download — your browser will open and Android will offer to install it when the download finishes.",
+                        color = TextSecondary,
+                        style = MaterialTheme.typography.bodySmall)
+                    Button(
+                        onClick  = { openUrl(update.url) },
+                        colors   = ButtonDefaults.buttonColors(containerColor = BlueAccent),
+                        modifier = Modifier.fillMaxWidth()
+                    ) { Text("Download ${update.version}", color = NavyDeep) }
+                }
+            }
+        }
+        is UpdateState.Error -> {
+            Text("⚠  ${update.message}",
+                color = ErrorRed,
+                style = MaterialTheme.typography.bodySmall)
+            TextButton(onClick = viewModel::reset) {
+                Text("Try again", color = TextMuted)
+            }
         }
     }
 }
@@ -101,11 +181,9 @@ private fun AboutRow(label: String, value: String) {
 @Composable
 private fun AboutLinkRow(label: String, value: String, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier              = Modifier.fillMaxWidth().clickable(onClick = onClick),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment     = Alignment.CenterVertically
     ) {
         Text(label, style = MaterialTheme.typography.bodyMedium,
             color = TextMuted, modifier = Modifier.width(80.dp))

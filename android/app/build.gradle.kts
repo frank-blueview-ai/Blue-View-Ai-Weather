@@ -14,19 +14,35 @@ android {
         applicationId  = "ai.blueview.weather"
         minSdk         = 26          // Android 8.0 — covers 95%+ of active devices
         targetSdk      = 34
-        versionCode    = 1
-        versionName    = "1.0.0"
+        versionCode    = 6
+        versionName    = "1.0.5"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+            val ksFile = rootProject.file("keystore/blueview-release.jks")
+            if (ksFile.exists()) {
+                storeFile     = ksFile
+                storePassword = "blueview2026"
+                keyAlias      = "blueview"
+                keyPassword   = "blueview2026"
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled   = true
             isShrinkResources = true
+            signingConfig     = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -36,7 +52,7 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
 
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
     packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
 }
