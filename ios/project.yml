@@ -20,6 +20,7 @@ targets:
         # iOS, no encryption of its own. Declaring this here means App Store
         # Connect stops asking the export-compliance question on every build.
         ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: "Blue View Weather uses your location to show the forecast and radar for where you are."
         UILaunchScreen: {}
         UIRequiredDeviceCapabilities: [armv7]
         UISupportedInterfaceOrientations:
@@ -34,8 +35,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ai.blueview.weather
-        MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "2"
+        MARKETING_VERSION: "1.1.0"
+        CURRENT_PROJECT_VERSION: "3"
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         DEVELOPMENT_TEAM: "LDYV28TV5T"
