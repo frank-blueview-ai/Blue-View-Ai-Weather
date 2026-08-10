@@ -23,7 +23,7 @@ enum class LocationMode { AUTOMATIC, PINNED }
 data class UserPrefs(
     // Legacy single-city fields, still populated so existing collectors keep working.
     val city: String              = "",
-    val units: String             = "metric",   // "metric" | "imperial"
+    val units: String             = "imperial", // "metric" | "imperial"
     val lat: Double               = 0.0,
     val lon: Double               = 0.0,
     val cityLabel: String         = "",
@@ -82,7 +82,7 @@ class UserPreferencesRepository @Inject constructor(
 
             UserPrefs(
                 city         = p[Keys.CITY]       ?: "",
-                units        = p[Keys.UNITS]      ?: "metric",
+                units        = p[Keys.UNITS]      ?: "imperial",
                 lat          = p[Keys.LAT]        ?: 0.0,
                 lon          = p[Keys.LON]        ?: 0.0,
                 cityLabel    = p[Keys.CITY_LABEL] ?: "",

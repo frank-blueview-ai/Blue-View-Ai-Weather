@@ -146,7 +146,7 @@ fun SettingsScreen(
 
             // Units
             Text("Units", style = MaterialTheme.typography.titleMedium, color = BlueAccent)
-            val currentUnits = prefs?.units ?: "metric"
+            val currentUnits = prefs?.units ?: "imperial"
             listOf("metric" to "Metric (°C, km/h)", "imperial" to "Imperial (°F, mph)")
                 .forEach { (value, label) ->
                     Row(

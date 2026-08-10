@@ -24,7 +24,7 @@ data class HomeUiState(
     val cityLabel: String             = "",
     val lat: Double                   = 0.0,
     val lon: Double                   = 0.0,
-    val units: String                 = "metric",
+    val units: String                 = "imperial",
     val error: String?                = null,
     val selectedDate: String?         = null,      // hourly drill-down
     val expandForecast: Boolean       = true,
