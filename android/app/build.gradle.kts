@@ -19,14 +19,26 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Release signing. The keystore is never committed — CI materialises it from
+    // the KEYSTORE_BASE64 secret and supplies the credentials via the environment,
+    // so nothing secret lives in this file. A missing or empty keystore (local dev)
+    // falls back to Gradle's default debug signing rather than failing the build.
+    val keystoreFile  = rootProject.file("keystore/blueview-release.jks")
+    val keystorePass  = System.getenv("KEYSTORE_PASSWORD")
+    val keystoreAlias = System.getenv("KEY_ALIAS")
+    val keyPass       = System.getenv("KEY_PASSWORD")
+    val hasKeystore   = keystoreFile.exists() && keystoreFile.length() > 0L &&
+                        !keystorePass.isNullOrBlank() &&
+                        !keystoreAlias.isNullOrBlank() &&
+                        !keyPass.isNullOrBlank()
+
     signingConfigs {
         create("release") {
-            val ksFile = rootProject.file("keystore/blueview-release.jks")
-            if (ksFile.exists()) {
-                storeFile     = ksFile
-                storePassword = "blueview2026"
-                keyAlias      = "blueview"
-                keyPassword   = "blueview2026"
+            if (hasKeystore) {
+                storeFile     = keystoreFile
+                storePassword = keystorePass
+                keyAlias      = keystoreAlias
+                keyPassword   = keyPass
             }
         }
     }
@@ -35,14 +47,17 @@ android {
         release {
             isMinifyEnabled   = true
             isShrinkResources = true
-            signingConfig     = signingConfigs.getByName("release")
+            if (hasKeystore) signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
+        // Sign debug with the release key too: the APK published to GitHub Releases
+        // is the debug one, and a stable key is what lets each version install over
+        // the last instead of failing with "App not installed".
         debug {
-            signingConfig = signingConfigs.getByName("release")
+            if (hasKeystore) signingConfig = signingConfigs.getByName("release")
         }
     }
 
