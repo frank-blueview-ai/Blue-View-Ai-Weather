@@ -16,6 +16,10 @@ targets:
       path: BlueViewWeather/App/Info.plist
       properties:
         CFBundleDisplayName: Blue View Weather
+        # Without these the plist keeps XcodeGen's literal 1.0/1 and MARKETING_VERSION
+        # never reaches the bundle, so About and the update check read a stale version.
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         # App only uses HTTPS via URLSession/WKWebView — i.e. the TLS built into
         # iOS, no encryption of its own. Declaring this here means App Store
         # Connect stops asking the export-compliance question on every build.
@@ -36,7 +40,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ai.blueview.weather
         MARKETING_VERSION: "1.1.0"
-        CURRENT_PROJECT_VERSION: "3"
+        CURRENT_PROJECT_VERSION: "4"
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1,2"
         DEVELOPMENT_TEAM: "LDYV28TV5T"
