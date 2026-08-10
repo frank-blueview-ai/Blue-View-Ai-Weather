@@ -1,13 +1,22 @@
 import SwiftUI
 import WebKit
 
+/// Leaflet is vendored in the bundle rather than pulled from a CDN — the Android app hit
+/// exactly this (the CDN is unreachable inside some WebViews/networks) and the radar silently
+/// stayed blank. Inlining also keeps the map working offline apart from the tiles themselves.
+private func leafletAsset(_ name: String, _ ext: String) -> String {
+    guard let url = Bundle.main.url(forResource: name, withExtension: ext),
+          let contents = try? String(contentsOf: url, encoding: .utf8) else { return "" }
+    return contents
+}
+
 private func radarHtml(lat: Double, lon: Double, city: String) -> String {
     let citySafe = city.replacingOccurrences(of: "'", with: "\\'")
     return """
     <!DOCTYPE html>
     <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>\(leafletAsset("leaflet", "css"))</style>
+    <script>\(leafletAsset("leaflet", "js"))</script>
     <style>*{margin:0;padding:0}html,body,#map{width:100%;height:100%;background:#0b0e1c}
     .leaflet-control-attribution{font-size:9px!important;opacity:0.4!important}
     </style></head><body><div id="map"></div>
