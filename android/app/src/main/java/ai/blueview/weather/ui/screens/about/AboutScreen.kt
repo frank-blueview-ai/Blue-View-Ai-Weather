@@ -69,9 +69,15 @@ fun AboutScreen(
                 color     = BlueAccent,
                 textAlign = TextAlign.Center)
 
-            Spacer(Modifier.height(4.dp))
-            UpdateSection(update, viewModel, ::openUrl)
-            Spacer(Modifier.height(4.dp))
+            // github flavour only. UPDATE_CHECK_ENABLED is a compile-time constant, so
+            // R8 drops this whole branch — the update UI, its copy and the download URL
+            // — from the Play artifact, where Play policy forbids pointing users at an
+            // APK download of this same app.
+            if (BuildConfig.UPDATE_CHECK_ENABLED) {
+                Spacer(Modifier.height(4.dp))
+                UpdateSection(update, viewModel, ::openUrl)
+                Spacer(Modifier.height(4.dp))
+            }
 
             HorizontalDivider(color = TextMuted.copy(alpha = 0.3f))
             Spacer(Modifier.height(4.dp))
@@ -82,6 +88,9 @@ fun AboutScreen(
             AboutLinkRow("Paper",   "mypapertrail.co")    { openUrl("https://mypapertrail.co") }
             AboutLinkRow("Read2Me", "read2me.co")         { openUrl("https://read2me.co") }
             AboutLinkRow("Web",     "blueview.ai")        { openUrl("https://blueview.ai") }
+            // Play requires a reachable privacy policy for the store listing; linking it
+            // in-app as well is what reviewers look for and saves a rejection round-trip.
+            AboutLinkRow("Privacy", "Privacy Policy")     { openUrl("https://blueview.ai/weather/privacy") }
 
             Spacer(Modifier.height(4.dp))
             HorizontalDivider(color = TextMuted.copy(alpha = 0.3f))

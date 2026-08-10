@@ -29,8 +29,37 @@ private const val TAG = "RadarWeb"
  */
 private const val ASSET_BASE_URL = "https://appassets.androidplatform.net/"
 
+/**
+ * Escapes a value for embedding inside a single-quoted JavaScript string literal.
+ *
+ * Both values interpolated into the script below — the city name and the RainViewer tile
+ * URL — originate in remote API responses, so neither can be assumed quote-free.
+ *
+ * Order matters: the backslash pass must run first or it would double-escape the
+ * backslashes the later passes insert. The "</" pass runs last for the same reason,
+ * since the backslash it adds is intentional.
+ *
+ * The "</" case is the one a plain quote-escape misses: the HTML parser terminates the
+ * <script> block on "</script" before JavaScript ever sees the string, so a city named
+ * "</script><img onerror=...>" would escape the script entirely. "<\/" is an identical
+ * string to JavaScript but is invisible to the HTML tokenizer.
+ *
+ * Line terminators are escaped because a raw newline inside a string literal is a
+ * syntax error, and JavaScript additionally treats U+2028/U+2029 as line breaks.
+ */
+private fun jsEscape(value: String): String = value
+    .replace("\\", "\\\\")
+    .replace("'", "\\'")
+    .replace("\"", "\\\"")
+    .replace("\n", "\\n")
+    .replace("\r", "\\r")
+    .replace("\u2028", "\\u2028")
+    .replace("\u2029", "\\u2029")
+    .replace("</", "<\\/")
+
 private fun radarHtml(lat: Double, lon: Double, city: String, tileUrl: String, heightDp: Int): String {
-    val citySafe = city.replace("\\", "\\\\").replace("'", "\\'")
+    val citySafe = jsEscape(city)
+    val tileSafe = jsEscape(tileUrl)
     return """<!DOCTYPE html>
 <html>
 <head>
@@ -69,7 +98,7 @@ try {
     maxZoom: 19
   }).addTo(map);
 
-  L.tileLayer('$tileUrl', {
+  L.tileLayer('$tileSafe', {
     opacity: 0.65,
     zIndex: 10
   }).addTo(map);
@@ -84,7 +113,7 @@ try {
 
   var el = document.getElementById('map');
   console.log('RADAR_OK map built at $lat,$lon size=' + el.clientWidth + 'x' + el.clientHeight +
-              ' tiles=$tileUrl');
+              ' tiles=$tileSafe');
 
   // The page is loaded before the WebView has been laid out to its final height, so
   // html/body height:100% resolves against a zero-height viewport. Leaflet caches that
@@ -111,6 +140,9 @@ try {
 }
 
 @SuppressLint("SetJavaScriptEnabled")
+// setSafeBrowsingEnabled is deprecated from API 35 (Safe Browsing became mandatory) but
+// still meaningful on the API 26-34 devices this app supports, so keep calling it.
+@Suppress("DEPRECATION")
 @Composable
 fun RadarWebView(
     lat: Double,
@@ -198,13 +230,40 @@ fun RadarWebView(
                 }
 
                 with(settings) {
+                    // Leaflet needs script and its own tile cache; everything below this
+                    // pair is switched off because the radar page never uses it, and an
+                    // enabled-by-default capability is reachable by any script the page
+                    // ends up running.
                     javaScriptEnabled    = true
                     domStorageEnabled    = true
                     useWideViewPort      = true
                     loadWithOverviewMode = true
-                    // Assets now arrive through the asset loader, so raw file:// access
-                    // is no longer needed and stays off.
-                    allowFileAccess      = false
+
+                    // Assets now arrive through the asset loader over the https origin, so
+                    // no file:// or content:// reach is needed. The two *FromFileURLs flags
+                    // default to true below API 30 and are the classic path for a local
+                    // page to read arbitrary app files, so they are pinned off explicitly.
+                    allowFileAccess                  = false
+                    allowContentAccess               = false
+                    allowFileAccessFromFileURLs      = false
+                    allowUniversalAccessFromFileURLs = false
+
+                    // The map centres on a fix the app already resolved and passes in as
+                    // lat/lon, so the page has no reason to ask the platform for a position
+                    // — and the app no longer holds a location permission a prompt could use.
+                    setGeolocationEnabled(false)
+
+                    // No media on this page, and no popups: a tile response cannot turn
+                    // into an autoplaying element or a new window.
+                    mediaPlaybackRequiresUserGesture      = true
+                    javaScriptCanOpenWindowsAutomatically = false
+                    setSupportMultipleWindows(false)
+
+                    // Default-on since API 26 and mandatory (setter is a no-op) from API 35,
+                    // stated anyway so the check on the remote tile hosts is not left to a
+                    // default that a WebView update could flip.
+                    safeBrowsingEnabled = true
+
                     setSupportZoom(false)
                 }
                 tag = ""

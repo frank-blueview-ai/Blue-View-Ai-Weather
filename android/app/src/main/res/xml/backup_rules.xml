@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Auto Backup rules for API 26-30. The API 31+ replacement lives in
+    data_extraction_rules.xml; older devices ignore that file and read this one, so the
+    same exclusion has to be stated twice.
+
+    Listing only <exclude> keeps the default "back up everything else" behaviour, which
+    is what we want: settings and cached preferences are harmless. The DataStore file
+    behind UserPreferences ("user_prefs") is not — it carries the saved-city list, which
+    is effectively a location history, and must not be copied to Google Drive.
+-->
+<full-backup-content>
+    <exclude domain="file" path="datastore/user_prefs.preferences_pb" />
+</full-backup-content>

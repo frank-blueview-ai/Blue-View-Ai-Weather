@@ -25,7 +25,7 @@ Native Android app for [Blue View Weather](https://blueview.ai) — live radar, 
 ### From GitHub Releases
 
 1. Go to [Releases](https://github.com/frank-blueview-ai/Blue-View-Ai-Weather/releases)
-2. Download `app-debug.apk`
+2. Download `app-github-release.apk`
 3. Enable "Install unknown apps" in Android Settings → Security
 4. Open the APK to install
 
@@ -34,8 +34,8 @@ Native Android app for [Blue View Weather](https://blueview.ai) — live radar, 
 ```bash
 git clone https://github.com/frank-blueview-ai/Blue-View-Ai-Weather.git
 cd Blue-View-Ai-Weather/android
-./gradlew assembleDebug
-adb install app/build/outputs/apk/debug/app-debug.apk
+./gradlew assembleGithubDebug
+adb install app/build/outputs/apk/github/debug/app-github-debug.apk
 ```
 
 Requires JDK 17 and Android SDK 34.

@@ -30,7 +30,7 @@ export KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD
 DEV=${DEV:-192.168.1.240:38443}
 PKG=ai.blueview.weather
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-APK=$DIR/app/build/outputs/apk/debug/app-debug.apk
+APK=$DIR/app/build/outputs/apk/github/debug/app-github-debug.apk
 EVID=${EVID:-$DIR/../.evidence}
 ADB="$ANDROID_HOME/platform-tools/adb -s $DEV"
 
@@ -40,7 +40,7 @@ die() { echo "FAIL: $*" >&2; exit 1; }
 
 case "${1:-}" in
   build)
-    cd "$DIR" && ./gradlew assembleDebug --no-daemon -q || die "gradle build failed"
+    cd "$DIR" && ./gradlew assembleGithubDebug --no-daemon -q || die "gradle build failed"
     test -f "$APK" || die "APK not produced"
     echo "OK build $(stat -c%s "$APK") bytes"
     ;;

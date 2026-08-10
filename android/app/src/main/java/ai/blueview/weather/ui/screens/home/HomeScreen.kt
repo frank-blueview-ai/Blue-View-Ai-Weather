@@ -43,10 +43,11 @@ fun HomeScreen(
     var searchQuery by remember { mutableStateOf("") }
     var citiesOpen by remember { mutableStateOf(false) }
 
-    val locationPermissions = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
+    // COARSE only. The app resolves a city, which approximate location already answers,
+    // and FINE is not declared in the manifest — requesting an undeclared permission is
+    // silently denied, and shipping FINE would force a "precise location" Data Safety
+    // declaration plus extra Play review for no functional gain.
+    val locationPermissions = arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
     val context = LocalContext.current
     fun hasLocationGrant() = locationPermissions.any {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
@@ -55,8 +56,7 @@ fun HomeScreen(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { grants ->
         viewModel.onLocationPermissionResult(
-            grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true ||
-                grants[Manifest.permission.ACCESS_FINE_LOCATION] == true
+            grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         )
     }
 

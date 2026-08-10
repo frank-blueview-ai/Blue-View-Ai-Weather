@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Backup / transfer rules for API 31+ (Android 12 and newer).
+    See backup_rules.xml for the API 26-30 equivalent; both must exist because minSdk is 26.
+
+    Everything is backed up by default; the one exclusion is the DataStore file behind
+    UserPreferences ("user_prefs"). It holds the user's saved-city list, which taken
+    together is effectively a location history, and cloud backup would copy that to the
+    user's Google Drive where the app can no longer reason about it.
+
+    device-transfer deliberately keeps the file: that path is a direct device-to-device
+    migration the user explicitly initiates, it never lands on Google's servers, and
+    dropping the city list there would silently reset a new phone to an empty app.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="datastore/user_prefs.preferences_pb" />
+    </cloud-backup>
+    <device-transfer />
+</data-extraction-rules>

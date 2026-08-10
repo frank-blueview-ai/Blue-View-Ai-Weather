@@ -10,6 +10,11 @@ import okhttp3.Request
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// github flavour only. The Play artifact must not contain any of this: Play's
+// Device and Network Abuse policy forbids an app it distributes from updating
+// itself outside Play or pointing users at another download of the same app.
+// See src/play/.../UpdateChecker.kt for the stub that replaces it.
+
 // The monorepo releases all three platforms, each on its own tag prefix, so
 // /releases/latest is not usable here — it could return an ios- or desktop- tag.
 // Fetch the list (newest first) and pick the newest android- release.
@@ -29,14 +34,6 @@ data class GithubAsset(
     @SerialName("name")                 val name: String,
     @SerialName("browser_download_url") val downloadUrl: String
 )
-
-sealed class UpdateState {
-    object Idle                                                 : UpdateState()
-    object Checking                                             : UpdateState()
-    object UpToDate                                             : UpdateState()
-    data class Available(val version: String, val url: String)  : UpdateState()
-    data class Error(val message: String)                       : UpdateState()
-}
 
 @Singleton
 class UpdateChecker @Inject constructor(
