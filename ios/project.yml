@@ -16,6 +16,10 @@ targets:
       path: BlueViewWeather/App/Info.plist
       properties:
         CFBundleDisplayName: Blue View Weather
+        # App only uses HTTPS via URLSession/WKWebView — i.e. the TLS built into
+        # iOS, no encryption of its own. Declaring this here means App Store
+        # Connect stops asking the export-compliance question on every build.
+        ITSAppUsesNonExemptEncryption: false
         UILaunchScreen: {}
         UIRequiredDeviceCapabilities: [armv7]
         UISupportedInterfaceOrientations:
