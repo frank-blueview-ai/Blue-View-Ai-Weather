@@ -371,9 +371,13 @@ Legend: 🔒 = **irreversible or effectively permanent**.
 ## 6. Pre-submission verification the developer should re-run
 
 - Confirm the Play variant contains **no update checker, no `REQUEST_INSTALL_PACKAGES`,
-  and no "download the latest APK" UI**. At the time of writing,
-  `data/update/UpdateChecker.kt` and an `UpdateSection` in `AboutScreen.kt` exist in
-  the tree and are being removed/gated for the Play build by separate work — verify
-  in the **merged manifest and the built AAB**, not just the source.
+  and no "download the latest APK" UI**. This is now enforced in two places, but
+  re-verify against the **built AAB**, not the source: the real updater lives only in
+  `src/github/`, `src/play/` holds an inert stub, and `AboutScreen` gates the UI on
+  `BuildConfig.UPDATE_CHECK_ENABLED` so R8 strips it. The CI job fails if the string
+  `api.github.com/repos` appears in the Play AAB's dex. To check by hand:
+
+      unzip -p app/build/outputs/bundle/playRelease/app-play-release.aab base/dex/*.dex \
+        | strings | grep -c "api.github.com/repos"     # must print 0
 - Confirm the listing text shipped to Play contains no GitHub link.
 - Confirm the privacy policy URL resolves publicly and matches §1's declarations.
