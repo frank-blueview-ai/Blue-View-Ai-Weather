@@ -35,3 +35,6 @@ env/
 
 # Logs
 *.log
+
+# Device-test evidence (screenshots, logcat dumps)
+.evidence/

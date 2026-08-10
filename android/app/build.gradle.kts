@@ -14,8 +14,8 @@ android {
         applicationId  = "ai.blueview.weather"
         minSdk         = 26          // Android 8.0 — covers 95%+ of active devices
         targetSdk      = 34
-        versionCode    = 9
-        versionName    = "1.0.9"
+        versionCode    = 10
+        versionName    = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.splashscreen)
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.webkit)      // WebViewAssetLoader — serves bundled Leaflet over https
     implementation(libs.activity.compose)
 
     // Compose

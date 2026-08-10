@@ -16,7 +16,6 @@ import ai.blueview.weather.util.*
 
 @Composable
 fun CurrentWeatherCard(
-    city: String,
     current: CurrentDto,
     daily: DailyDto,
     units: String,
@@ -29,14 +28,8 @@ fun CurrentWeatherCard(
         "↑ ${daily.tempMax[0].toInt()}  ↓ ${daily.tempMin[0].toInt()}  $sym" else ""
 
     Column(modifier = modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-        // City
-        Text(
-            text  = city,
-            style = MaterialTheme.typography.titleMedium,
-            color = BlueAccent
-        )
-        Spacer(Modifier.height(12.dp))
-
+        // The active city is named by the switcher in the top bar, so repeating
+        // it here just duplicated it on screen.
         // Icon + Temperature row
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(

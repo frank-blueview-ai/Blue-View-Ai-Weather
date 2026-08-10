@@ -17,6 +17,7 @@ core-ktx             = "1.13.1"
 splashscreen         = "1.0.1"
 material             = "1.12.0"
 appcompat            = "1.7.0"
+webkit               = "1.11.0"
 
 [libraries]
 # Core
@@ -24,6 +25,7 @@ core-ktx                    = { group = "androidx.core",      name = "core-ktx",
 splashscreen                = { group = "androidx.core",      name = "core-splashscreen",      version.ref = "splashscreen" }
 material                    = { group = "com.google.android.material", name = "material",             version.ref = "material" }
 appcompat                   = { group = "androidx.appcompat", name = "appcompat",                version.ref = "appcompat" }
+webkit                      = { group = "androidx.webkit",    name = "webkit",                 version.ref = "webkit" }
 
 # Compose
 compose-bom                 = { group = "androidx.compose",   name = "compose-bom",            version.ref = "compose-bom" }

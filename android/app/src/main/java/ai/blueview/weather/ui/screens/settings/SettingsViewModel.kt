@@ -2,6 +2,8 @@ package ai.blueview.weather.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ai.blueview.weather.data.preferences.LocationMode
+import ai.blueview.weather.data.preferences.SavedCity
 import ai.blueview.weather.data.preferences.UserPrefs
 import ai.blueview.weather.data.preferences.UserPreferencesRepository
 import ai.blueview.weather.data.repository.WeatherRepository
@@ -24,11 +26,31 @@ class SettingsViewModel @Inject constructor(
             when (val geo = repository.geocode(city)) {
                 is WeatherResult.Success -> {
                     val r = geo.data
-                    prefsRepo.saveCity(city, "${r.name}, ${r.countryCode}", r.latitude, r.longitude)
+                    // addCity is idempotent on id, so re-adding refreshes rather than duplicates.
+                    prefsRepo.addCity(
+                        SavedCity(
+                            name    = r.name,
+                            country = r.countryCode,
+                            lat     = r.latitude,
+                            lon     = r.longitude
+                        )
+                    )
                 }
                 is WeatherResult.Error -> Unit
             }
         }
+    }
+
+    fun removeCity(id: String) {
+        viewModelScope.launch { prefsRepo.removeCity(id) }
+    }
+
+    fun pinCity(id: String) {
+        viewModelScope.launch { prefsRepo.pinCityAndSwitch(id) }
+    }
+
+    fun setLocationMode(mode: LocationMode) {
+        viewModelScope.launch { prefsRepo.setLocationMode(mode) }
     }
 
     fun setUnits(units: String) {
