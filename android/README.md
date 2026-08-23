@@ -11,6 +11,7 @@ Native Android app for [Blue View Weather](https://blueview.ai) — live radar, 
 | Hourly breakdown | Filtered by selected day — time, icon, temp, precipitation % |
 | Live radar map | RainViewer tiles on a dark Leaflet map, auto-refreshes every 5 min |
 | Saved cities | Save as many cities as you like; switch from the title bar or Settings |
+| City local time | Shows the clock where the city is, not where you are; 12h or 24h |
 | Automatic location | Follows your current city by default, or pin a saved city instead |
 | Units | Metric (°C) or Imperial (°F) |
 | No API key | Powered by [Open-Meteo](https://open-meteo.com) and [RainViewer](https://rainviewer.com) |
