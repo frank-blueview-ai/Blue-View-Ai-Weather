@@ -1,0 +1,74 @@
+/* Blue View Weather — palette lifted from the app itself, not re-invented. */
+:root{
+  --navy:#0B0E1C; --navy-card:#141A2E; --navy-mid:#1B2440;
+  --blue:#52BEE8; --amber:#F5A742;
+  --ink:#E8ECF5; --ink-2:#A9B6CE; --ink-3:#6C7A94;
+  --edge:rgba(169,182,206,.16);
+  --wrap:1080px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--navy); color:var(--ink);
+  font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--blue); text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--blue); outline-offset:3px; border-radius:4px}
+img{max-width:100%; display:block}
+.wrap{max-width:var(--wrap); margin:0 auto; padding:0 24px}
+
+header.top{position:sticky; top:0; z-index:10; background:rgba(11,14,28,.9);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--edge)}
+.top .wrap{display:flex; align-items:center; gap:12px; height:64px}
+.brand{display:flex; align-items:center; gap:10px; font-weight:650; color:var(--ink)}
+.brand img{width:30px;height:30px}
+.top nav{margin-left:auto; display:flex; gap:22px; font-size:.95rem}
+.top nav a{color:var(--ink-2)}
+
+.hero{padding:76px 0 56px; text-align:center}
+.hero img.icon{width:112px;height:112px;margin:0 auto 26px;
+  filter:drop-shadow(0 14px 34px rgba(82,190,232,.22))}
+.hero h1{margin:0 0 14px; font-size:clamp(2.1rem,6vw,3.4rem); line-height:1.1; letter-spacing:-.02em}
+.hero h1 span{color:var(--blue)}
+.hero p.lede{margin:0 auto 34px; max-width:60ch; font-size:clamp(1.02rem,2.4vw,1.2rem); color:var(--ink-2)}
+.cta{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+.btn{display:inline-block; padding:13px 26px; border-radius:999px; font-weight:600}
+.btn-primary{background:var(--blue); color:var(--navy)}
+.btn-primary:hover{background:#6ccdf2; text-decoration:none}
+.btn-ghost{border:1px solid var(--edge); color:var(--ink)}
+.btn-ghost:hover{border-color:var(--blue); text-decoration:none}
+.note{margin-top:16px; font-size:.85rem; color:var(--ink-3)}
+
+.shots{display:flex; gap:18px; overflow-x:auto; padding:10px 24px 30px;
+  scroll-snap-type:x mandatory; max-width:var(--wrap); margin:0 auto}
+.shots figure{margin:0; flex:0 0 auto; scroll-snap-align:center; width:min(232px,58vw)}
+.shots img{border-radius:16px; border:1px solid var(--edge); background:var(--navy-card)}
+.shots figcaption{margin-top:9px; font-size:.82rem; color:var(--ink-3); text-align:center}
+
+section{padding:56px 0; border-top:1px solid var(--edge)}
+h2{margin:0 0 26px; font-size:1.5rem; letter-spacing:-.01em}
+.grid{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:var(--navy-card); border:1px solid var(--edge); border-radius:14px; padding:20px}
+.card h3{margin:0 0 7px; font-size:1.02rem; color:var(--blue)}
+.card p{margin:0; color:var(--ink-2); font-size:.94rem}
+
+footer{border-top:1px solid var(--edge); padding:34px 0 52px; color:var(--ink-3); font-size:.9rem}
+footer .links{display:flex; gap:20px; flex-wrap:wrap; margin-bottom:14px}
+
+/* Long-form policy pages */
+.prose{max-width:76ch; margin:0 auto; padding:44px 24px 72px}
+.prose h1{font-size:clamp(1.7rem,4.4vw,2.3rem); line-height:1.2; margin:0 0 8px}
+.prose h2{margin:38px 0 12px; font-size:1.24rem; color:var(--blue); scroll-margin-top:80px}
+.prose h3{margin:26px 0 8px; font-size:1.04rem}
+.prose p,.prose li{color:var(--ink-2)}
+.prose code{background:var(--navy-mid); padding:2px 6px; border-radius:5px; font-size:.88em; color:var(--ink)}
+.prose table{width:100%; border-collapse:collapse; margin:18px 0; display:block; overflow-x:auto}
+.prose th,.prose td{border:1px solid var(--edge); padding:9px 11px; text-align:left; font-size:.9rem}
+.prose th{background:var(--navy-mid); color:var(--ink)}
+.prose blockquote{margin:18px 0; padding:12px 18px; border-left:3px solid var(--blue);
+  background:var(--navy-card); border-radius:0 8px 8px 0}
+.prose hr{border:0; border-top:1px solid var(--edge); margin:30px 0}
+
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blue View Weather — Privacy Policy</title>
+<meta name="description" content="How the Blue View Weather Android app handles location and other data.">
+<link rel="icon" href="/assets/icon.png">
+<link rel="stylesheet" href="/assets/site.css">
+<meta name="theme-color" content="#0B0E1C">
+<meta name="robots" content="index,follow">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><img src="/assets/icon.png" alt=""> Blue View Weather</a>
+    <nav><a href="/">Home</a><a href="/privacy">Privacy</a></nav>
+  </div>
+</header>
+
+<main class="prose">
+<h1 id="blue-view-weather-privacy-policy">Blue View Weather — Privacy Policy</h1>
+<p><strong>Effective date: 10 August 2026</strong>
+<strong>Applies to:</strong> the Blue View Weather Android application (package <code>ai.blueview.weather</code>)
+<strong>Publisher / contact:</strong> Frank Perez — <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#102;&#114;&#97;&#110;&#107;&#64;&#98;&#108;&#117;&#101;&#118;&#105;&#101;&#119;&#46;&#97;&#105;">&#102;&#114;&#97;&#110;&#107;&#64;&#98;&#108;&#117;&#101;&#118;&#105;&#101;&#119;&#46;&#97;&#105;</a></p>
+<p>Blue View Weather is a weather app. It shows the current conditions, an hourly and
+7-day forecast, and a precipitation radar map for a place you choose or for where
+your device currently is.</p>
+<p>This policy describes exactly what the app does with data. Every statement below
+describes behaviour that is present in the app's source code, which is public.</p>
+<hr />
+<h2 id="1-short-version">1. Short version</h2>
+<ul>
+<li>There is <strong>no account</strong>. You never sign in, and the app has no user identifier.</li>
+<li>There is <strong>no analytics SDK, no crash-reporting SDK, no advertising SDK, and no
+  tracking or attribution SDK</strong> of any kind in the app.</li>
+<li>The app <strong>does not collect an advertising ID</strong>, and does not build a profile of you.</li>
+<li>The developer operates <strong>no server</strong>. Nothing you do in the app is sent to Blue
+  View. The app talks only to the third-party weather and map services listed in
+  section 4, and it talks to them directly from your device.</li>
+<li>Your saved cities and settings are stored <strong>only on your device</strong>.</li>
+<li>Location is used <strong>only while the app is open</strong>, only to work out which city to
+  show, and coordinates are <strong>rounded to about 11 metres before they are sent
+  anywhere</strong>.</li>
+</ul>
+<hr />
+<h2 id="2-information-the-app-uses">2. Information the app uses</h2>
+<h3 id="21-device-location-optional">2.1 Device location (optional)</h3>
+<p>If you grant the location permission, the app reads a single location fix from the
+Android system while you are using it, in order to work out which city you are in
+and fetch that city's forecast.</p>
+<p>Specific, verifiable details:</p>
+<ul>
+<li>The app requests <strong><code>ACCESS_COARSE_LOCATION</code> only</strong>. It does not request, and does
+  not declare, <code>ACCESS_FINE_LOCATION</code> — approximate location is all that is needed to
+  work out which city you are in, so the app never asks for precise location.</li>
+<li>The app has <strong>no background location permission</strong> and <strong>no foreground service</strong>.
+  It cannot and does not read your location when it is not in the foreground.</li>
+<li>The app will accept a cached system fix only if it is <strong>less than 5 minutes old</strong>;
+  otherwise it asks for one live fix, with a <strong>10 second</strong> budget, and then stops.
+  It does not subscribe to continuous location updates.</li>
+<li>The fix is converted to a city name using the <strong>Android system geocoder</strong>, which
+  is a function of your device/operating system. On many devices that geocoder is
+  itself served by a Google backend; that lookup is performed by Android, not by
+  this app, and is governed by your device manufacturer's and Google's own privacy
+  terms.</li>
+<li>Before any coordinate leaves the app, it is <strong>rounded to 4 decimal places
+  (approximately 11 metres)</strong>. The full-precision GPS fix is never transmitted and
+  is never written to storage or to a log in release builds.</li>
+<li>Your location is <strong>not stored</strong> by the app as location history. Only the resulting
+  city (name, country, and its rounded coordinates) can end up in your saved-city
+  list, and only on your device.</li>
+</ul>
+<p><strong>You can refuse or revoke this at any time.</strong> The app works without location — see
+section 3 for the fallback and section 8 for how to revoke.</p>
+<h3 id="22-ip-derived-approximate-location-fallback">2.2 IP-derived approximate location (fallback)</h3>
+<p>When device location is unavailable — permission not granted, location turned off,
+no fix obtained in time, or the system geocoder unavailable — the app requests
+<code>https://ipapi.co/json/</code> to obtain an approximate city.</p>
+<p>That request necessarily exposes your device's <strong>public IP address</strong> to ipapi.co,
+which uses it to derive an approximate city, country, latitude and longitude. The
+app sends no other information in that request: no identifier, no cookie, no API
+key, no name, and no device location. The app keeps only the resulting city name,
+country and coordinates, in memory and — if you save that city — on your device.</p>
+<h3 id="23-city-searches-you-type">2.3 City searches you type</h3>
+<p>When you search for a city, the text you type is sent to Open-Meteo's geocoding API
+in order to resolve it to coordinates. It is not sent anywhere else, and it is not
+retained by the app except as a saved city if you choose to save it.</p>
+<h3 id="24-settings-and-saved-cities">2.4 Settings and saved cities</h3>
+<p>Your unit preference (metric/imperial), your saved cities, which city is pinned,
+whether the app is in automatic or pinned location mode, and a flag recording that
+the location permission has already been requested once, are stored in Android
+DataStore in the app's own private storage on your device. <strong>None of this is
+transmitted to the developer or to any third party.</strong></p>
+<p>Note that the app allows Android's standard <strong>Auto Backup</strong> (<code>allowBackup="true"</code>).
+That means Android may include this app's settings file in the device backup that
+your operating system makes to your own Google account. That backup is created and
+controlled by Android, not by this app, and is governed by Google's privacy policy.
+You can turn device backup off in your Android system settings.</p>
+<h3 id="25-what-the-app-does-not-collect">2.5 What the app does <strong>not</strong> collect</h3>
+<p>The app does not collect, request, or transmit: your name, email address, phone
+number, contacts, calendar, photos, files, microphone or camera input, installed
+app list, advertising identifier, IMEI/serial number, browsing history, health data,
+financial data, or any other personal identifier. There is no analytics or telemetry
+event of any kind.</p>
+<hr />
+<h2 id="3-how-the-app-decides-which-city-to-show">3. How the app decides which city to show</h2>
+<ol>
+<li>If you have pinned a city, that city is used and no location lookup happens.</li>
+<li>Otherwise, if location permission is granted, the app takes one location fix and
+   reverse-geocodes it (section 2.1).</li>
+<li>If that fails or is not permitted, the app falls back to IP-derived location
+   (section 2.2).</li>
+<li>If that also fails, the app asks you to search for a city.</li>
+</ol>
+<hr />
+<h2 id="4-third-parties-that-receive-requests">4. Third parties that receive requests</h2>
+<p>The app makes network requests directly from your device to the services below. Any
+service your device connects to necessarily sees your device's <strong>public IP address</strong>
+and the request itself; that is inherent to how the internet works, and is the main
+privacy consideration here. None of these services receives an account, a user ID,
+or an advertising ID from this app, because the app has none.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>What it is used for</th>
+<th>What it receives</th>
+<th>Their policy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Open-Meteo</strong> (<code>api.open-meteo.com</code>, <code>geocoding-api.open-meteo.com</code>)</td>
+<td>Forecast data; converting a city name you type into coordinates</td>
+<td>Your IP address; the coordinates of the city being displayed, <strong>rounded to ~11 m</strong>; the city name text you search for; your chosen units</td>
+<td><a href="https://open-meteo.com/en/terms">https://open-meteo.com/en/terms</a></td>
+</tr>
+<tr>
+<td><strong>ipapi.co</strong> (<code>ipapi.co</code>)</td>
+<td>Fallback city lookup when device location is unavailable</td>
+<td>Your IP address only</td>
+<td><a href="https://ipapi.co/privacy/">https://ipapi.co/privacy/</a></td>
+</tr>
+<tr>
+<td><strong>RainViewer</strong> (<code>api.rainviewer.com</code> and its tile hosts)</td>
+<td>Precipitation radar overlay on the radar map</td>
+<td>Your IP address; the map tile coordinates being viewed (i.e. roughly which part of the world is on screen)</td>
+<td><a href="https://www.rainviewer.com/privacy-policy.html">https://www.rainviewer.com/privacy-policy.html</a></td>
+</tr>
+<tr>
+<td><strong>CARTO</strong> (<code>basemaps.cartocdn.com</code>)</td>
+<td>Base map imagery under the radar overlay</td>
+<td>Your IP address; the map tile coordinates being viewed</td>
+<td><a href="https://carto.com/privacy/">https://carto.com/privacy/</a></td>
+</tr>
+</tbody>
+</table>
+<p>Map tile requests identify a tile grid square, not a point. The radar map opens at a
+regional zoom level, so tile requests reveal an approximate area, not a precise
+position.</p>
+<p>The mapping library (Leaflet) is <strong>bundled inside the app</strong>, not loaded from a CDN,
+so no third-party script host is contacted to render the map.</p>
+<p>Builds of this app distributed outside Google Play — that is, from the project's
+public source repository — additionally contact GitHub's public API to check whether
+a newer release exists. <strong>The version published on Google Play does not include that
+feature and does not contact GitHub.</strong> If it applied to your build, GitHub would see
+your IP address and nothing else; see <a href="https://docs.github.com/site-policy/privacy-policies/github-privacy-statement">https://docs.github.com/site-policy/privacy-policies/github-privacy-statement</a>.</p>
+<hr />
+<h2 id="5-retention">5. Retention</h2>
+<ul>
+<li>Location fixes are held in memory only for as long as it takes to resolve a city,
+  and are discarded when the app process ends. The app keeps no location history.</li>
+<li>Saved cities and settings persist on your device until you delete them in the app,
+  clear the app's storage, or uninstall the app. <strong>Uninstalling removes all of it.</strong></li>
+<li>The developer retains nothing, because the developer receives nothing.</li>
+<li>Retention by the third parties in section 4 — for example, IP addresses in their
+  web server logs — is governed by their own policies, linked above.</li>
+</ul>
+<hr />
+<h2 id="6-how-the-data-is-protected">6. How the data is protected</h2>
+<ul>
+<li>All network requests use <strong>HTTPS</strong>. Cleartext traffic is disabled at the platform
+  level (<code>android:usesCleartextTraffic="false"</code>), so the app cannot fall back to
+  unencrypted HTTP.</li>
+<li>Settings and saved cities live in the app's private storage, which Android isolates
+  from other apps.</li>
+<li>Network request logging, which would echo coordinates into the system log, is
+  <strong>compiled out of release builds</strong> and exists only in debug builds.</li>
+</ul>
+<hr />
+<h2 id="7-childrens-privacy">7. Children's privacy</h2>
+<p>Blue View Weather is a general-audience weather app. It is not directed at children,
+and it does not knowingly collect personal information from anyone, including
+children under 13 (or the equivalent minimum age in your jurisdiction). There is no
+account creation, no user-generated content, no messaging, no advertising, and no
+profiling, so there is nothing collected that could identify a child. If you believe
+a child has somehow provided personal information through this app, contact
+<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#102;&#114;&#97;&#110;&#107;&#64;&#98;&#108;&#117;&#101;&#118;&#105;&#101;&#119;&#46;&#97;&#105;">&#102;&#114;&#97;&#110;&#107;&#64;&#98;&#108;&#117;&#101;&#118;&#105;&#101;&#119;&#46;&#97;&#105;</a>.</p>
+<hr />
+<h2 id="8-your-choices-and-your-rights">8. Your choices and your rights</h2>
+<ul>
+<li><strong>Refuse location.</strong> Decline the permission prompt. The app falls back to
+  IP-derived city detection, or you can just search for a city.</li>
+<li><strong>Revoke location later.</strong> Android <strong>Settings → Apps → Blue View Weather →
+  Permissions → Location → Don't allow</strong>. This takes effect immediately; the app
+  re-checks the permission on every lookup.</li>
+<li><strong>Avoid the IP lookup entirely.</strong> Grant location, or pin a city. When a city is
+  pinned, the app does not perform any location lookup at all.</li>
+<li><strong>Delete your data.</strong> Remove saved cities in the app, or clear the app's storage,
+  or uninstall the app. There is no server-side copy to request the deletion of.</li>
+<li><strong>Access / portability.</strong> All data the app holds about you is on your device and
+  is visible in the app's own UI.</li>
+</ul>
+<p>Because the app collects no personal data on any server, requests under the GDPR,
+UK GDPR, CCPA/CPRA and similar laws (access, deletion, correction, portability,
+opt-out of sale or sharing) are satisfied by the on-device controls above. <strong>The
+developer does not sell or share personal information, and never has.</strong> Where
+processing of your IP address by the app's use of the third-party services in
+section 4 requires a legal basis under the GDPR, that basis is legitimate interest
+in delivering the forecast and map you requested; you can avoid the ipapi.co request
+entirely by pinning a city, and avoid the map-tile requests by not opening the radar
+section.</p>
+<hr />
+<h2 id="9-changes-to-this-policy">9. Changes to this policy</h2>
+<p>If this policy changes materially, the effective date at the top will be updated and
+the revised policy will be published at the same location, alongside the app's public
+source. Continued use of the app after that date is subject to the revised policy.</p>
+<hr />
+<h2 id="10-contact">10. Contact</h2>
+<p>Questions, corrections, or privacy requests: <strong><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#102;&#114;&#97;&#110;&#107;&#64;&#98;&#108;&#117;&#101;&#118;&#105;&#101;&#119;&#46;&#97;&#105;">&#102;&#114;&#97;&#110;&#107;&#64;&#98;&#108;&#117;&#101;&#118;&#105;&#101;&#119;&#46;&#97;&#105;</a></strong></p>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="/">Home</a>
+      <a href="https://github.com/frank-blueview-ai/Blue-View-Ai-Weather">Source</a>
+      <a href="mailto:frank@blueview.ai">frank@blueview.ai</a>
+    </div>
+    <div>&copy; 2026 BlueView / Frank Perez.</div>
+  </div>
+</footer>
+
+</body>
+</html>

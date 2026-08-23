@@ -90,7 +90,7 @@ fun AboutScreen(
             AboutLinkRow("Web",     "blueview.ai")        { openUrl("https://blueview.ai") }
             // Play requires a reachable privacy policy for the store listing; linking it
             // in-app as well is what reviewers look for and saves a rejection round-trip.
-            AboutLinkRow("Privacy", "Privacy Policy")     { openUrl("https://blueview.ai/weather/privacy") }
+            AboutLinkRow("Privacy", "Privacy Policy")     { openUrl("https://weather.blueview.ai/privacy") }
 
             Spacer(Modifier.height(4.dp))
             HorizontalDivider(color = TextMuted.copy(alpha = 0.3f))
