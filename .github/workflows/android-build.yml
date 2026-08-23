@@ -5,6 +5,13 @@ on:
     tags:
       - 'android-v*'
   workflow_dispatch:
+    inputs:
+      play_track:
+        description: 'Play track to upload to (empty = do not upload)'
+        required: false
+        default: ''
+        type: choice
+        options: ['', 'internal', 'alpha', 'beta', 'production']
 
 permissions:
   contents: write
@@ -122,3 +129,72 @@ jobs:
         with:
           files: |
             android/app/build/outputs/apk/github/release/app-github-release.apk
+
+  publish-play:
+    name: Upload AAB to Google Play
+    needs: build
+    runs-on: ubuntu-latest
+    # Only runs when a service-account secret exists. Until you add it this job is
+    # skipped, so the pipeline stays green before Play is wired up.
+    if: needs.build.result == 'success'
+    steps:
+      - name: Check whether Play publishing is configured
+        id: gate
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$SA" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::PLAY_SERVICE_ACCOUNT_JSON is not set — skipping Play upload."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Tag pushes go to the internal track, never straight to production. Promotion
+      # to production stays a deliberate human action in the Play Console (or a
+      # manual run of this workflow with play_track=production).
+      - name: Resolve target track
+        id: track
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          TRACK="${{ inputs.play_track }}"
+          if [ -z "$TRACK" ]; then
+            if [ "${{ github.event_name }}" = "push" ]; then TRACK=internal; else
+              echo "::notice::No track selected — skipping upload."
+              echo "track=" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          fi
+          echo "track=$TRACK" >> "$GITHUB_OUTPUT"
+          echo "::notice::Uploading to the '$TRACK' track."
+
+      - name: Download the AAB built by the build job
+        if: steps.track.outputs.track != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: play-release-aab
+          path: aab
+
+      - name: Write the service-account key
+        if: steps.track.outputs.track != ''
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          printf '%s' "$SA" > /tmp/play-sa.json
+          python3 -c "import json,sys; json.load(open('/tmp/play-sa.json'))" \
+            || { echo "::error::PLAY_SERVICE_ACCOUNT_JSON is not valid JSON"; exit 1; }
+
+      - name: Upload to Google Play
+        if: steps.track.outputs.track != ''
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: /tmp/play-sa.json
+          packageName: ai.blueview.weather
+          releaseFiles: aab/app-play-release.aab
+          track: ${{ steps.track.outputs.track }}
+          # Draft, not live: Play still requires the first release of a new app to be
+          # reviewed and rolled out by hand, and a draft is reviewable/abortable.
+          status: draft
+
+      - name: Remove the key from the runner
+        if: always()
+        run: rm -f /tmp/play-sa.json
