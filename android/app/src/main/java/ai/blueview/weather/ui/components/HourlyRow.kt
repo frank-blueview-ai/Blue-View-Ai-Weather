@@ -17,6 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ai.blueview.weather.data.api.dto.HourlyDto
+import ai.blueview.weather.data.preferences.ClockFormat
+import ai.blueview.weather.util.CityClock
 import ai.blueview.weather.ui.theme.*
 import ai.blueview.weather.util.wmoIcon
 import java.time.LocalDateTime
@@ -27,13 +29,12 @@ fun HourlyRow(
     hourly: HourlyDto,
     selectedDate: String,
     units: String,
+    clockFormat: ClockFormat,
     modifier: Modifier = Modifier
 ) {
     val sym    = if (units == "imperial") "°F" else "°C"
     val slots  = hourly.time.indices.filter { hourly.time[it].startsWith(selectedDate) }
     val shape  = RoundedCornerShape(8.dp)
-    val fmt    = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
-    val timeFmt = DateTimeFormatter.ofPattern("h a")
 
     LazyRow(
         modifier              = modifier.fillMaxWidth(),
@@ -41,9 +42,9 @@ fun HourlyRow(
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         items(slots) { i ->
-            val timeLabel = try {
-                LocalDateTime.parse(hourly.time[i], fmt).format(timeFmt)
-            } catch (e: Exception) { hourly.time[i].takeLast(5) }
+            // Already the city's local time (timezone=auto), so it is formatted
+            // as-is and never converted a second time.
+            val timeLabel = CityClock.hourLabel(hourly.time[i], clockFormat)
             val pop = hourly.precipProb.getOrNull(i) ?: 0
 
             Column(

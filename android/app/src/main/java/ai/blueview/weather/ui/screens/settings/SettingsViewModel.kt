@@ -2,6 +2,7 @@ package ai.blueview.weather.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ai.blueview.weather.data.preferences.ClockFormat
 import ai.blueview.weather.data.preferences.LocationMode
 import ai.blueview.weather.data.preferences.SavedCity
 import ai.blueview.weather.data.preferences.UserPrefs
@@ -51,6 +52,10 @@ class SettingsViewModel @Inject constructor(
 
     fun setLocationMode(mode: LocationMode) {
         viewModelScope.launch { prefsRepo.setLocationMode(mode) }
+    }
+
+    fun setClockFormat(format: ClockFormat) {
+        viewModelScope.launch { prefsRepo.setClockFormat(format) }
     }
 
     fun setUnits(units: String) {

@@ -87,8 +87,10 @@
 # -----------------------------------------------------------------------------
 # Enums persisted by constant name
 # -----------------------------------------------------------------------------
-# CRITICAL. LocationMode (data/preferences/UserPreferences.kt) is written to
-# DataStore as `mode.name` and read back with `entries.firstOrNull { it.name == raw }`.
+# CRITICAL. LocationMode and ClockFormat (data/preferences/UserPreferences.kt) are
+# written to DataStore as `.name` and read back with `entries.firstOrNull { it.name == raw }`.
+# The rule is deliberately package-wide so any future persisted enum is covered by
+# default rather than needing someone to remember to add it.
 # R8 full mode renames enum constant fields *and* rewrites the name string handed to
 # the Enum constructor, so after minification `.name` yields "a"/"b". A user who
 # pinned a city would then read a stored "PINNED" that matches nothing and fall

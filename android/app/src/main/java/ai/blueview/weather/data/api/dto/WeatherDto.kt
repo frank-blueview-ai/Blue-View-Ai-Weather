@@ -22,7 +22,12 @@ data class GeocodingResult(
 data class ForecastResponse(
     val current: CurrentDto,
     val hourly: HourlyDto,
-    val daily: DailyDto
+    val daily: DailyDto,
+    // Sent as timezone=auto, so these describe the CITY being viewed, not the phone.
+    // Defaulted because a malformed/absent value must not fail the whole forecast.
+    @SerialName("utc_offset_seconds")     val utcOffsetSeconds: Int = 0,
+    @SerialName("timezone")               val timezone: String = "",
+    @SerialName("timezone_abbreviation")  val timezoneAbbreviation: String = ""
 )
 
 @Serializable

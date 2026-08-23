@@ -20,6 +20,9 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "us
 /** Whether the active city tracks the device location or is a city the user pinned. */
 enum class LocationMode { AUTOMATIC, PINNED }
 
+/** How clock times are rendered. Persisted BY NAME — see proguard-rules.pro. */
+enum class ClockFormat { H12, H24 }
+
 data class UserPrefs(
     // Legacy single-city fields, still populated so existing collectors keep working.
     val city: String              = "",
@@ -30,7 +33,8 @@ data class UserPrefs(
     // Multi-city model.
     val savedCities: List<SavedCity> = emptyList(),
     val locationMode: LocationMode   = LocationMode.AUTOMATIC,
-    val pinnedCityId: String?        = null
+    val pinnedCityId: String?        = null,
+    val clockFormat: ClockFormat     = ClockFormat.H12
 ) {
     /** The saved city [pinnedCityId] points at, or null if nothing is pinned/found. */
     val pinnedCity: SavedCity?
@@ -53,6 +57,7 @@ class UserPreferencesRepository @Inject constructor(
         val CITY_LABEL      = stringPreferencesKey("city_label")
         val SAVED_CITIES    = stringPreferencesKey("saved_cities_json")
         val LOCATION_MODE   = stringPreferencesKey("location_mode")
+        val CLOCK_FORMAT    = stringPreferencesKey("clock_format")
         val PINNED_CITY_ID  = stringPreferencesKey("pinned_city_id")
         // Set once the legacy city has been copied into SAVED_CITIES, so a city the
         // user later deletes is not resurrected by the migration fallback below.
@@ -88,6 +93,7 @@ class UserPreferencesRepository @Inject constructor(
                 cityLabel    = p[Keys.CITY_LABEL] ?: "",
                 savedCities  = cities,
                 locationMode = parseMode(p[Keys.LOCATION_MODE]),
+                clockFormat  = parseClock(p[Keys.CLOCK_FORMAT]),
                 pinnedCityId = pinned
             )
         }
@@ -222,6 +228,14 @@ class UserPreferencesRepository @Inject constructor(
         } catch (e: Exception) {
             emptyList()   // malformed blob must not crash the app or the Flow
         }
+    }
+
+    /** Unknown or absent falls back to 12-hour rather than throwing. */
+    private fun parseClock(raw: String?): ClockFormat =
+        ClockFormat.entries.firstOrNull { it.name == raw } ?: ClockFormat.H12
+
+    suspend fun setClockFormat(format: ClockFormat) {
+        context.dataStore.edit { p -> p[Keys.CLOCK_FORMAT] = format.name }
     }
 
     private fun parseMode(raw: String?): LocationMode =

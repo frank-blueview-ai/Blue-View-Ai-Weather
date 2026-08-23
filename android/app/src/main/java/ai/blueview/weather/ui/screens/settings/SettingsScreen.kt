@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PushPin
+import ai.blueview.weather.data.preferences.ClockFormat
 import ai.blueview.weather.data.preferences.LocationMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -168,6 +169,35 @@ fun SettingsScreen(
                         Text(label, color = TextPrimary)
                     }
                 }
+
+            HorizontalDivider(color = TextMuted.copy(alpha = 0.3f))
+
+            // Time format — applies to the city clock and the hourly breakdown.
+            Text("Time Format", style = MaterialTheme.typography.titleMedium, color = BlueAccent)
+            val currentClock = prefs?.clockFormat ?: ClockFormat.H12
+            listOf(
+                ClockFormat.H12 to "12-hour (1:30 PM)",
+                ClockFormat.H24 to "24-hour (13:30)"
+            ).forEach { (format, label) ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectable(
+                            selected = currentClock == format,
+                            onClick  = { viewModel.setClockFormat(format) }
+                        )
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = currentClock == format,
+                        onClick  = { viewModel.setClockFormat(format) },
+                        colors   = RadioButtonDefaults.colors(selectedColor = BlueAccent)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(label, color = TextPrimary)
+                }
+            }
         }
     }
 }

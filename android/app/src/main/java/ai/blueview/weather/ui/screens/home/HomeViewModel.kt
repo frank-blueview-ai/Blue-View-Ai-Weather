@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ai.blueview.weather.data.api.dto.ForecastResponse
 import ai.blueview.weather.data.location.LocationProvider
+import ai.blueview.weather.data.preferences.ClockFormat
 import ai.blueview.weather.data.preferences.LocationMode
 import ai.blueview.weather.data.preferences.SavedCity
 import ai.blueview.weather.data.preferences.UserPrefs
@@ -36,7 +37,8 @@ data class HomeUiState(
     val savedCities: List<SavedCity>  = emptyList(),
     val locationMode: LocationMode    = LocationMode.AUTOMATIC,
     val activeCityId: String?         = null,
-    val askLocationPermission: Boolean = false
+    val askLocationPermission: Boolean = false,
+    val clockFormat: ClockFormat      = ClockFormat.H12
 )
 
 @HiltViewModel
@@ -98,6 +100,7 @@ class HomeViewModel @Inject constructor(
                 isLoading    = true,
                 error        = null,
                 units        = p.units,
+                clockFormat  = p.clockFormat,
                 savedCities  = p.savedCities,
                 locationMode = p.locationMode
             )

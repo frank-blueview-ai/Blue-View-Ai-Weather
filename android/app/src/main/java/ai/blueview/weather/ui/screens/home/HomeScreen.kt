@@ -194,9 +194,12 @@ fun HomeScreen(
                         // Current conditions
                         state.forecast?.let { fc ->
                             CurrentWeatherCard(
-                                current = fc.current,
-                                daily   = fc.daily,
-                                units   = state.units
+                                current          = fc.current,
+                                daily            = fc.daily,
+                                units            = state.units,
+                                timezone         = fc.timezone,
+                                utcOffsetSeconds = fc.utcOffsetSeconds,
+                                clockFormat      = state.clockFormat
                             )
                         }
 
@@ -226,7 +229,8 @@ fun HomeScreen(
                                         HourlyRow(
                                             hourly       = fc.hourly,
                                             selectedDate = date,
-                                            units        = state.units
+                                            units        = state.units,
+                                            clockFormat  = state.clockFormat
                                         )
                                     }
                                 }
