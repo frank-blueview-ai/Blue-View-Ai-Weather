@@ -16,7 +16,7 @@ body{
 a{color:var(--blue); text-decoration:none}
 a:hover{text-decoration:underline}
 a:focus-visible,button:focus-visible{outline:2px solid var(--blue); outline-offset:3px; border-radius:4px}
-img{max-width:100%; display:block}
+img{max-width:100%; height:auto; display:block}
 .wrap{max-width:var(--wrap); margin:0 auto; padding:0 24px}
 
 header.top{position:sticky; top:0; z-index:10; background:rgba(11,14,28,.9);
