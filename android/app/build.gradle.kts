@@ -10,7 +10,7 @@ plugins {
 // Version
 // ---------------------------------------------------------------------------
 
-val appVersionName = "1.2.1"
+val appVersionName = "1.2.2"
 
 /**
  * Derives versionCode from versionName: "1.2.0" -> 10200.
