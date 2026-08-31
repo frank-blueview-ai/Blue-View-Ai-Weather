@@ -111,6 +111,15 @@ android {
             isMinifyEnabled   = true
             isShrinkResources = true
             if (hasKeystore) signingConfig = signingConfigs.getByName("release")
+            // Play warns that the bundle has native code without debug symbols. That
+            // warning is currently unfixable and benign: the only .so files are prebuilts
+            // from AndroidX (datastore_shared_counter, androidx.graphics.path) and they
+            // ship already stripped — `file` reports "stripped", 0 debug sections — so
+            // there is nothing for AGP to extract. This setting is therefore a no-op
+            // today; it is kept so symbols are collected automatically if this app ever
+            // gains native code of its own. R8's proguard.map IS included automatically,
+            // so Kotlin/Java stack traces in Play Console are already deobfuscated.
+            ndk { debugSymbolLevel = "FULL" }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
