@@ -1,0 +1,85 @@
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - 'PRIVACY.md'          # the policy page is generated from it
+      - '.github/workflows/website.yml'
+  workflow_dispatch:
+
+# Pages deployments need these; they are scoped to this workflow only.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a newer commit supersede an in-flight one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Regenerate the privacy page from PRIVACY.md
+        run: |
+          python -m pip install --quiet markdown
+          python website/build.py
+
+      # The published policy must match the repo copy — Play compares it against
+      # the Data safety declaration. Fail rather than publish a stale page.
+      - name: Fail if the generated policy is stale
+        run: |
+          if ! git diff --quiet -- website/privacy/index.html; then
+            echo "::error::website/privacy/index.html is out of date. Run website/build.py and commit."
+            git --no-pager diff --stat -- website/privacy/index.html
+            exit 1
+          fi
+          echo "Privacy page is in sync with PRIVACY.md."
+
+      - name: Sanity-check the built site
+        run: |
+          test -s website/index.html          || { echo "::error::index.html missing"; exit 1; }
+          test -s website/privacy/index.html  || { echo "::error::privacy page missing"; exit 1; }
+          test -s website/assets/site.css     || { echo "::error::stylesheet missing"; exit 1; }
+          # Absolute local paths break under a /repo-name/ subpath.
+          if grep -rnE '(href|src)="/(assets|privacy)' website/index.html website/privacy/index.html; then
+            echo "::error::absolute local paths found — use relative ones"; exit 1
+          fi
+          echo "Site looks well-formed."
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Verify the deployed pages respond
+        run: |
+          BASE="${{ steps.deployment.outputs.page_url }}"
+          for p in "" "privacy/"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "${BASE}${p}")
+            echo "  ${BASE}${p} -> $code"
+            [ "$code" = "200" ] || { echo "::error::${BASE}${p} returned $code"; exit 1; }
+          done

@@ -14,7 +14,7 @@ import markdown
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "PRIVACY.md")
-OUT = os.path.join(ROOT, "website", "privacy.html")
+OUT = os.path.join(ROOT, "website", "privacy", "index.html")
 
 body = markdown.markdown(
     open(SRC, encoding="utf-8").read(),
@@ -34,8 +34,8 @@ page = f"""<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{html.escape(title)}</title>
 <meta name="description" content="How the Blue View Weather Android app handles location and other data.">
-<link rel="icon" href="/assets/icon.png">
-<link rel="stylesheet" href="/assets/site.css">
+<link rel="icon" href="../assets/icon.png">
+<link rel="stylesheet" href="../assets/site.css">
 <meta name="theme-color" content="#0B0E1C">
 <meta name="robots" content="index,follow">
 </head>
@@ -43,8 +43,8 @@ page = f"""<!doctype html>
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="/"><img src="/assets/icon.png" alt=""> Blue View Weather</a>
-    <nav><a href="/">Home</a><a href="/privacy">Privacy</a></nav>
+    <a class="brand" href="../"><img src="../assets/icon.png" alt=""> Blue View Weather</a>
+    <nav><a href="../">Home</a><a href="./">Privacy</a></nav>
   </div>
 </header>
 
@@ -55,7 +55,7 @@ page = f"""<!doctype html>
 <footer>
   <div class="wrap">
     <div class="links">
-      <a href="/">Home</a>
+      <a href="../">Home</a>
       <a href="https://github.com/frank-blueview-ai/Blue-View-Ai-Weather">Source</a>
       <a href="mailto:frank@blueview.ai">frank@blueview.ai</a>
     </div>
@@ -66,5 +66,6 @@ page = f"""<!doctype html>
 </body>
 </html>
 """
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 open(OUT, "w", encoding="utf-8").write(page)
 print(f"wrote {OUT} ({len(page)} bytes) from {os.path.basename(SRC)}")

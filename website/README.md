@@ -4,9 +4,9 @@ Static marketing site for the Blue View Weather Android app, plus the privacy
 policy that Google Play requires at a public URL.
 
 ```
-index.html      landing page
-privacy.html    GENERATED — do not edit; run build.py
-build.py        renders privacy.html from ../PRIVACY.md
+index.html          landing page
+privacy/index.html  GENERATED — do not edit; run build.py
+build.py            renders the privacy page from ../PRIVACY.md
 assets/         css, icon, screenshots
 deploy.sh       rsync to the server
 nginx-weather.blueview.ai.conf   vhost, with setup steps in its header
@@ -20,17 +20,24 @@ live page and `PRIVACY.md` drift apart, that is a misdeclaration. Editing
 
 ## Deploy
 
-```bash
-./deploy.sh user@bvos-host
-```
+The site is hosted on **GitHub Pages**, deployed by
+`.github/workflows/website.yml` on any push to `main` that touches `website/`
+or `PRIVACY.md`. There is no server to log into and nothing shared with
+production infrastructure.
 
-Before the first deploy:
+The workflow refuses to publish if `privacy/index.html` has drifted from
+`PRIVACY.md`, or if any absolute local path would break under a subpath.
 
-1. **DNS** — an A record for `weather.blueview.ai` pointing at the server
-   (`bvos.blueview.ai` currently resolves to `34.56.90.115`). Nothing else works
-   until this propagates.
-2. **vhost** — install `nginx-weather.blueview.ai.conf`; steps are in its header.
-3. **TLS** — `sudo certbot --nginx -d weather.blueview.ai`. Requires DNS first.
+### Custom domain
+
+`weather.blueview.ai` needs a **CNAME** record pointing at
+`frank-blueview-ai.github.io` (replacing the A record that pointed at the old
+host). GitHub issues the TLS certificate automatically once that resolves.
+
+### Self-hosting instead
+
+`deploy.sh` and `nginx-weather.blueview.ai.conf` remain for anyone who would
+rather serve it from their own box. They are not used by the live site.
 
 ## The /privacy URL is load-bearing
 
