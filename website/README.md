@@ -30,9 +30,12 @@ The workflow refuses to publish if `privacy/index.html` has drifted from
 
 ### Custom domain
 
-`weather.blueview.ai` needs a **CNAME** record pointing at
-`frank-blueview-ai.github.io` (replacing the A record that pointed at the old
-host). GitHub issues the TLS certificate automatically once that resolves.
+Live at **https://weather.blueview.ai** — DNS is a CNAME to
+`frank-blueview-ai.github.io`, and GitHub issues the TLS certificate.
+
+`website/CNAME` is part of the deployed artifact on purpose: with
+Actions-based publishing the custom domain set in repo settings can be dropped
+by a later deploy, and that file re-asserts it every time. Do not delete it.
 
 ### Self-hosting instead
 
